@@ -1,3 +1,4 @@
+# utils/env_manager.py
 import os
 import sys
 from dotenv import load_dotenv
@@ -13,7 +14,7 @@ class EnvManager:
     and the project root is added to the PYTHONPATH. It uses the singleton pattern
     to ensure the environment is loaded only once.
     """
-    
+
     _instance = None
     _env_loaded = False
 
@@ -54,4 +55,3 @@ class EnvManager:
         except Exception as e:
             logger.error(f"Error getting environment variable {name}: {e}")
             raise RuntimeError(f"Failed to get environment variable {name}") from e
-                
