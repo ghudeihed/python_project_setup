@@ -1,10 +1,8 @@
-# utils/env_manager.py
 import os
-import sys
 from dotenv import load_dotenv
 from utils.logging_wrapper import LoggingWrapper
 
-logger = LoggingWrapper(__name__)
+logger = LoggingWrapper(__name__).logger
 
 class EnvManager:
     """
@@ -14,7 +12,7 @@ class EnvManager:
     and the project root is added to the PYTHONPATH. It uses the singleton pattern
     to ensure the environment is loaded only once.
     """
-
+    
     _instance = None
     _env_loaded = False
 
@@ -38,12 +36,6 @@ class EnvManager:
             except Exception as e:
                 logger.error(f"Error loading environment variables from {file_path}: {e}")
                 raise RuntimeError(f"Failed to load environment variables from {file_path}") from e
-
-            # Add the project root to sys.path
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            if project_root not in sys.path:
-                sys.path.append(project_root)
-                logger.info(f"Added {project_root} to sys.path")
 
     @staticmethod
     def get_env_variable(name: str, default: str = None) -> str:
