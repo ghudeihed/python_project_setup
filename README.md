@@ -35,6 +35,12 @@ project_root/
 └── README.md
 ```
 
+### Getting the Code
+
+You can find the complete code for this project in the GitHub repository linked below:
+
+[https://github.com/ghudeihed/python_project_setup](https://github.com/ghudeihed/python_project_setup)
+
 ### Installation Instructions
 
 To get started with your Python project, follow these steps to set up the necessary environment and install essential packages.
