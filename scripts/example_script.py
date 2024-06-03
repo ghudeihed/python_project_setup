@@ -1,17 +1,13 @@
-# scripts/example_script.py
-# scripts/example_script.py
-
-import os
-from utils.env_manager import EnvManager
-from utils.logging_wrapper import LoggingWrapper
+# Now import the necessary modules
+from utils import EnvManager, LoggingWrapper
 
 # Initialize logging
-logger = LoggingWrapper(__name__).get_logger()
+logger = LoggingWrapper(__name__).logger
 
 # Initialize environment manager and load .env variables
 env_manager = EnvManager()
 
-def main():
+def do_something():
     try:
         # Get environment variables
         number1 = env_manager.get_env_variable('NUMBER1', '10')
@@ -31,6 +27,3 @@ def main():
         logger.error(f"Error converting environment variables to integers: {e}")
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
-
-if __name__ == "__main__":
-    main()
