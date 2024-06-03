@@ -1,4 +1,4 @@
-## Setting Up Your Python Project Environment: A Comprehensive Guide
+### Updated Blog Post: Setting Up Your Python Project Environment: A Comprehensive Guide
 
 When starting a new Python project, setting up a clean and organized environment is crucial for maintaining your code and managing dependencies. In this blog, we'll walk through the steps to set up your Python project environment using either `pip` or `conda`, including creating a virtual environment, installing essential libraries, and ensuring reproducibility. We'll also introduce a basic folder structure, utility classes for managing environment variables and logging, and instructions for setting up version control with Git.
 
@@ -10,6 +10,8 @@ First, let's define a basic folder structure for your project. This will help ke
 project_root/
 │
 ├── utils/
+│   ├── __init__.py
+│   ├── path_setup.py
 │   ├── env_manager.py
 │   └── logging_wrapper.py
 │
@@ -25,6 +27,7 @@ project_root/
 ├── models/
 │   └── example_model.pkl
 │
+├── main.py
 ├── .env
 ├── environment.yml
 ├── requirements.txt
@@ -148,172 +151,7 @@ To get started with your Python project, follow these steps to set up the necess
 
 2. **Create a `.gitignore` File**
 
-   Create a `.gitignore` file to exclude files and directories that you don't want to track in version control:
-
-   ```plaintext
-   # Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-.pybuilder/
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-#   For a library or package, you might want to ignore these files since the code is
-#   intended to run in multiple environments; otherwise, check them in:
-# .python-version
-
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
-
-# poetry
-#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
-#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-#poetry.lock
-
-# pdm
-#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
-#pdm.lock
-#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
-#   in version control.
-#   https://pdm.fming.dev/latest/usage/project/#working-with-version-control
-.pdm.toml
-.pdm-python
-.pdm-build/
-
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# pytype static type analyzer
-.pytype/
-
-# Cython debug symbols
-cython_debug/
-
-# PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
-   ```
+   Create a `.gitignore` file to exclude files and directories that you don't want to track in version control
 
 3. **Add and Commit Files**
 
@@ -326,18 +164,35 @@ cython_debug/
 
 ### Utility Classes
 
-#### env_manager.py
+#### utils/path_setup.py
+
+This utility class helps manage the system path, ensuring that the project root is included in the `sys.path`.
+
+```python
+# utils/path_setup.py
+
+import os
+import sys
+
+class PathSetup:
+    @staticmethod
+    def add_project_root_to_sys_path():
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        if project_root not in sys.path:
+            sys.path.insert(0, project_root)  # Insert at the beginning of sys.path
+```
+
+#### utils/env_manager.py
 
 This utility class helps manage environment variables, making it easier to handle configurations.
 
 ```python
 # utils/env_manager.py
 import os
-import sys
 from dotenv import load_dotenv
 from utils.logging_wrapper import LoggingWrapper
 
-logger = LoggingWrapper(__name__)
+logger = LoggingWrapper(__name__).logger
 
 class EnvManager:
     """
@@ -372,12 +227,6 @@ class EnvManager:
                 logger.error(f"Error loading environment variables from {file_path}: {e}")
                 raise RuntimeError(f"Failed to load environment variables from {file_path}") from e
 
-            # Add the project root to sys.path
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            if project_root not in sys.path:
-                sys.path.append(project_root)
-                logger.info(f"Added {project_root} to sys.path")
-
     @staticmethod
     def get_env_variable(name: str, default: str = None) -> str:
         try:
@@ -390,7 +239,7 @@ class EnvManager:
             raise RuntimeError(f"Failed to get environment variable {name}") from e
 ```
 
-#### logging_wrapper.py
+#### utils/logging_wrapper.py
 
 This utility class provides a simple wrapper around Python's logging module, allowing for consistent and configurable logging throughout your project.
 
@@ -409,16 +258,16 @@ class LoggingWrapper:
         logger (logging.Logger): The logger instance.
     """
 
-    def __init__(self, name, log_dir='logs', log_level=logging.DEBUG, console_level=logging.ERROR, max_bytes=5*1024*1024, backup_count=5):
+    def __init__(self, name, log_dir='logs
+
+', log_level=logging.DEBUG, console_level=logging.ERROR, max_bytes=5*1024*1024, backup_count=5):
         self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.DEBUG)
 
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         
         if not os.path.exists(log_dir):
-            os
-
-.makedirs(log_dir)
+            os.makedirs(log_dir)
         
         now = datetime.now().strftime('%Y%m%d_%H%M%S')
         log_file = os.path.join(log_dir, f'log_{now}.log')
@@ -433,7 +282,7 @@ class LoggingWrapper:
         if not self.logger.handlers:
             self.logger.addHandler(fh)
             self.logger.addHandler(ch)
-    
+
     def debug(self, msg, *args, **kwargs):
         self.logger.debug(msg, *args, **kwargs)
     
@@ -452,17 +301,15 @@ class LoggingWrapper:
 
 ### Example Script
 
-Here's a toy example for `example_script.py` that utilizes the utility classes (`EnvManager` and `LoggingWrapper`) to demonstrate their benefits. The script will read an environment variable, perform a simple calculation, log the results, and include error handling.
+Here's a toy example for `example_script.py` that utilizes the utility classes (`PathSetup`, `EnvManager`, and `LoggingWrapper`) to demonstrate their benefits. The script will read an environment variable, perform a simple calculation, log the results, and include error handling.
 
 ```python
 # scripts/example_script.py
 
-import os
-from utils.env_manager import EnvManager
-from utils.logging_wrapper import LoggingWrapper
+from utils import EnvManager, LoggingWrapper
 
 # Initialize logging
-logger = LoggingWrapper(__name__).get_logger()
+logger = LoggingWrapper(__name__).logger
 
 # Initialize environment manager and load .env variables
 env_manager = EnvManager()
@@ -487,6 +334,22 @@ def main():
         logger.error(f"Error converting environment variables to integers: {e}")
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
+
+if __name__ == "__main__":
+    main()
+```
+
+### Entry Point Script
+
+Here's the entry point script `main.py` that sets up the environment and calls the example script.
+
+```python
+# main.py
+
+from utils.path_setup import PathSetup
+PathSetup.add_project_root_to_sys_path()
+
+from scripts.example_script import main
 
 if __name__ == "__main__":
     main()
